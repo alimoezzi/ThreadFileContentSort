@@ -1,5 +1,6 @@
 import os
 import threading
+from createRandomFile import createRandomIntFile
 
 
 def sortIntFile(filename: str):
@@ -15,6 +16,9 @@ def sortIntFile(filename: str):
 
 
 if __name__ == '__main__':
+    createRandomIntFile()
+    print('Random integer files created.')
+    os.system('pause')
     for i in os.scandir('intFiles/'):
         try:
             t = threading.Thread(target=sortIntFile, args=(i.path,), name=f'sort {i.path}')
