@@ -1,15 +1,21 @@
 import os
 
-for i in os.scandir():
-    if ' - lang_en_vs1' in i.name:
+
+def sortIntFile(filename: str):
+    lines = []
+    with open(filename, 'rt') as file:
+        lines = list(file.readlines())
+    lines = lines.sort(key=lambda x: int(x))
+    with  open(filename, 'wt') as file:
+        file.write('\n'.join(lines))
+        file.flush()
+
+
+
+if __name__ == '__main__':
+    for i in os.scandir('intFiles/'):
         try:
-            os.rename(
-                i.name,
-                str(
-                    int(
-                        i.name.split(' - ')[0]
-                    ) + 2
-                ) + ' - ' + i.name.split(' - ')[1].rstrip() + ".srt")
+            sortIntFile(i.path)
         except Exception as e:
             print(e)
             os.system('pause')
