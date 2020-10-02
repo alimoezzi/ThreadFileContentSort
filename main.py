@@ -2,6 +2,7 @@ import os
 import threading
 import numpy as np
 from createRandomFile import createRandomIntFile
+import multiprocessing as mul
 
 
 def sortIntFile(filenames: list):
@@ -14,7 +15,7 @@ def sortIntFile(filenames: list):
             file.write(''.join(lines))
             file.flush()
 
-        print(f'\nThread {threading.currentThread().getName()} exiting')
+        print(f'\nWorker {threading.currentThread().getName()}@{mul.process.current_process()} exiting')
 
 
 if __name__ == '__main__':
@@ -22,12 +23,18 @@ if __name__ == '__main__':
     print('Random integer files created.')
     os.system('pause')
     n = input("Enter number of workers: ")
+    o = input("Thread or process (1/0): ")
     l = [i.path for i in os.scandir('intFiles/') if '.keep' not in i.path]
     for i in np.array_split(l, int(n)):
         try:
-            t = threading.Thread(target=sortIntFile, args=(i,), name=f'sort {i}')
-            print(f'Thread {t.getName()} about to start')
-            t.start()
+            if o == '1':
+                t = threading.Thread(target=sortIntFile, args=(i,), name=f'sort {i}')
+                print(f'Worker {t.getName()} about to start')
+                t.start()
+            else:
+                pool = mul.Pool(mul.cpu_count())
+                results = pool.starmap(sortIntFile, [(i,)])
+                pool.close()
         except Exception as e:
             print(e)
             os.system('pause')
